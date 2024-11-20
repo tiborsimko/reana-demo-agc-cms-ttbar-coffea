@@ -25,13 +25,16 @@ def extract_samples_from_json(json_file):
                     ]
     return output_files
 #Function to get file paths based on the index
-def get_file_paths(wildcards, max=N_FILES_MAX_PER_SAMPLE):
+def get_file_paths(wildcards, max_files=N_FILES_MAX_PER_SAMPLE):
     "Return list of at most MAX file paths for the given SAMPLE and CONDITION."
     filepaths = []
     with open(f"sample_{wildcards.sample}__{wildcards.condition}_paths.txt", "r") as fd:
         filepaths = fd.read().splitlines()
+    num_files = len(filepaths)
+    if max_files >= 0:
+        num_files = min(max_files, num_files)
     # Using the index as the wildcard, creating a path for each file based on it's index
-    return [f"histograms/histograms_{wildcards.sample}__{wildcards.condition}__{index}.root" for index in range(len(filepaths))][:max]
+    return [f"histograms/histograms_{wildcards.sample}__{wildcards.condition}__{index}.root" for index in range(num_files)]
 
 samples_conditions = extract_samples_from_json("nanoaod_inputs.json")
 
